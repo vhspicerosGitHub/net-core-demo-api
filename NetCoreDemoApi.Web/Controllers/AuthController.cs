@@ -3,8 +3,8 @@ using Microsoft.IdentityModel.Tokens;
 using NetCoreDemoApi.Common;
 using NetCoreDemoApi.Services;
 using NetCoreDemoApi.Web.ViewModel;
-using SQLitePCL;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace NetCoreDemoApi.Web.Controllers
@@ -25,11 +25,11 @@ namespace NetCoreDemoApi.Web.Controllers
 
 
         [HttpPost]
-        public IActionResult Post([FromBody] LoginRequest request)
+        public async Task<IActionResult> Post([FromBody] LoginRequest request)
         {
             try
             {
-                var user = _authService.Login(email: request.Email, password: request.Password); // Throw a exception if not have access
+                var user = await _authService.Login(email: request.Email, password: request.Password); // Throw a exception if not have access
                 if (user == null)
                     throw new BusinessException("Password incorrect");
 
@@ -39,11 +39,13 @@ namespace NetCoreDemoApi.Web.Controllers
                 var Sectoken = new JwtSecurityToken(_config["Jwt:Issuer"],
                   _config["Jwt:Issuer"],
                   null,
-                  expires: DateTime.Now.AddMinutes(120),
+                  expires: DateTime.UtcNow.AddMinutes(240),
                   signingCredentials: credentials);
 
-                var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
+                Sectoken.Payload.AddClaim(new Claim(ClaimTypes.Name, request.Email));
+                Sectoken.Payload.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
 
+                var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
                 return Ok(token);
             }
             catch (Exception e)

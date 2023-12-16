@@ -4,6 +4,7 @@ using NetCoreDemoApi.Common;
 using NetCoreDemoApi.Model;
 using NetCoreDemoApi.Services;
 using NetCoreDemoApi.Web.ViewModel;
+using System.Security.Claims;
 
 namespace NetCoreDemoApi.Web.Controllers;
 
@@ -14,10 +15,13 @@ public class ClientController : ControllerBase
 {
     private readonly ILogger<ClientController> _logger;
     private readonly IClientService _service;
-    public ClientController(ILogger<ClientController> logger, IClientService service)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public ClientController(ILogger<ClientController> logger, IClientService service, IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
         _service = service;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     [HttpGet()]
@@ -26,6 +30,7 @@ public class ClientController : ControllerBase
     {
         try
         {
+            var test = User.Identity?.Name;
             return Ok(await _service.GetAll());
         }
         catch (BusinessException e)

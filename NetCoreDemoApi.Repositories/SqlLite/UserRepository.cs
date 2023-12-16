@@ -28,8 +28,9 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetByEmail(string email)
     {
         _logger.LogDebug($"Executing Query => {UserQueries.GetByEmail}");
-        return await GetConnection().QueryFirstOrDefaultAsync<User>(UserQueries.GetByEmail,
+        var user = await GetConnection().QueryFirstOrDefaultAsync<User>(UserQueries.GetByEmail,
              new { email });
+        return user;
     }
 
     public async Task<User?> GetById(int id)
