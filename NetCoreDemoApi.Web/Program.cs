@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using NetCoreDemoApi.Repositories;
 using NetCoreDemoApi.Repositories.SqlLite;
 using NetCoreDemoApi.Services;
 using Serilog;
+using System.Text;
 
 try
 {
@@ -15,14 +18,37 @@ try
 
     Log.Information("Starting web application");
 
+    //Jwt configuration starts here
+    var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
+    var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
+
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+     .AddJwtBearer(options =>
+     {
+         options.TokenValidationParameters = new TokenValidationParameters
+         {
+             ValidateIssuer = true,
+             ValidateAudience = true,
+             ValidateLifetime = true,
+             ValidateIssuerSigningKey = true,
+             ValidIssuer = jwtIssuer,
+             ValidAudience = jwtIssuer,
+             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+         };
+     });
+    //Jwt configuration ends here
+
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
-    //  Inyeccion de dependencias - Servicios de aplicacion
-    builder.Services.AddTransient<IClientService, ClientService>();
-    //  Inyeccion de dependencias - Repositorios (infraestructura)
+    //  Repositories
     builder.Services.AddTransient<IClientRepository, ClienteRepository>();
+    builder.Services.AddTransient<IUserRepository, UserRepository>();
+
+    //  services
+    builder.Services.AddTransient<IClientService, ClientService>();
+    builder.Services.AddTransient<AuthService>();
 
     var app = builder.Build();
 
