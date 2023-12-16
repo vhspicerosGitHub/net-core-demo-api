@@ -1,6 +1,6 @@
 ﻿namespace NetCoreDemoApi.Repositories.SqlLite
 {
-    public class Queries
+    public class ClientQueries
     {
 
         private static readonly string table = "clients";

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetCoreDemoApi.Common;
 using NetCoreDemoApi.Model;
@@ -6,6 +7,7 @@ using NetCoreDemoApi.Web.ViewModel;
 
 namespace NetCoreDemoApi.Web.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class ClientController : ControllerBase
