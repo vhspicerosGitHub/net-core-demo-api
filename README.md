@@ -1,2 +1,2 @@
-# net-core-demo-api
+# NetCoreDemoApi
 Demo Api using .Net Core
