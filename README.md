@@ -1,5 +1,5 @@
 # NetCoreDemoApi
-API made with dotnet core 6, with didactic purpose. This Api have the "standard"
+API made with dotnet core 6, with didactic purpose.
 
 # Installation
 ```
