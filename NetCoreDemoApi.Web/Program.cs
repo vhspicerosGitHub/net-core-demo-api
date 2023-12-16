@@ -50,6 +50,8 @@ try
     builder.Services.AddTransient<IClientService, ClientService>();
     builder.Services.AddTransient<AuthService>();
 
+    builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
